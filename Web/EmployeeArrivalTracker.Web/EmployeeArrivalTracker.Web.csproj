@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>aspnet-EmployeeArrivalTracker-BBB373B5-EF3F-4DBB-B8AA-7152CEC275BF</UserSecretsId>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\stylecop.json" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<InternalsVisibleTo Include="EmployeeArrivalTracker.Web.Tests" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.5" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.161" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.5" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\EmployeeArrivalTracker.Common\EmployeeArrivalTracker.Common.csproj" />
+    <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data.Models\EmployeeArrivalTracker.Data.Models.csproj" />
+    <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data\EmployeeArrivalTracker.Data.csproj" />
+    <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services.Data\EmployeeArrivalTracker.Services.Data.csproj" />
+    <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services.Mapping\EmployeeArrivalTracker.Services.Mapping.csproj" />
+    <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services\EmployeeArrivalTracker.Services.csproj" />
+    <ProjectReference Include="..\EmployeeArrivalTracker.Web.Infrastructure\EmployeeArrivalTracker.Web.Infrastructure.csproj" />
+    <ProjectReference Include="..\EmployeeArrivalTracker.Web.ViewModels\EmployeeArrivalTracker.Web.ViewModels.csproj" />
+  </ItemGroup>
+</Project>

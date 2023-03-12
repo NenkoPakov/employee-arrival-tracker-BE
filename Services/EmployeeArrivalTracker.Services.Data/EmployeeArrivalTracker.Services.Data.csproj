@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\Rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\..\stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.4" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data.Common\EmployeeArrivalTracker.Data.Common.csproj" />
+    <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data.Models\EmployeeArrivalTracker.Data.Models.csproj" />
+    <ProjectReference Include="..\..\Web\EmployeeArrivalTracker.Web.ViewModels\EmployeeArrivalTracker.Web.ViewModels.csproj" />
+    <ProjectReference Include="..\EmployeeArrivalTracker.Services.Mapping\EmployeeArrivalTracker.Services.Mapping.csproj" />
+  </ItemGroup>
+
+</Project>
