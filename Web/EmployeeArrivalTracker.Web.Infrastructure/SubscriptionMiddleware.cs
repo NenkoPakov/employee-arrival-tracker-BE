@@ -20,7 +20,7 @@
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/Employee/Arrival"))
+            if (context.Request.Path.StartsWithSegments("/employee/arrival", StringComparison.OrdinalIgnoreCase))
             {
                 this.memoryCache.TryGetValue(GlobalConstants.InMemorySubscriptionKey, out Subscription subscription);
 
@@ -38,7 +38,7 @@
                     return;
                 }
 
-                if (DateTime.UtcNow.Date != subscription?.Expires.Date)
+                if (DateTime.UtcNow.Date > subscription?.Expires.Date)
                 {
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     await context.Response.WriteAsync("Invalid date");

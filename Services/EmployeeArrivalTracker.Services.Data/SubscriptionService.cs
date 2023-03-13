@@ -66,7 +66,7 @@
             var queryString = new Dictionary<string, string>
             {
                 { "date", this.subscriptionDate },
-                { "callback", $"{this.apiUrl}/Employee/Arrival" },
+                { "callback", $"{this.apiUrl}/employee/arrival" },
             };
 
             var uri = QueryHelpers.AddQueryString(this.subscriptionUrl, queryString);

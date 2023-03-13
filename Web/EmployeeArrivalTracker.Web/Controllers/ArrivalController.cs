@@ -10,7 +10,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("arrival")]
     public class ArrivalController : BaseController
     {
         private readonly IArrivalService arrivalService;
@@ -21,7 +21,11 @@
         }
 
         [HttpGet]
-        [Route("Page")]
-        public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> Page(int pageNumber) => await this.arrivalService.GetArrivalsAsync(pageNumber);
+        [Route("page/{pageNumber:int?}")]
+        public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> Page(string orderByField, int pageNumber = 1, bool isAscending = true) => await this.arrivalService.GetArrivalsAsync(pageNumber, orderByField, isAscending);
+
+        [HttpGet]
+        [Route("count")]
+        public async Task<int> Count() => await this.arrivalService.GetCountAsync();
     }
 }

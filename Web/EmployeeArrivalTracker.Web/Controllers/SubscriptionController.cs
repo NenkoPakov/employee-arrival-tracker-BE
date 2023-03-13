@@ -10,7 +10,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("subscription")]
     public class SubscriptionController : BaseController
     {
         private readonly ISubscriptionService subscriptionService;
@@ -21,7 +21,7 @@
         }
 
         [HttpGet]
-        [Route("Subscribe")]
+        [Route("subscribe")]
         public async Task Subscribe() => await this.subscriptionService.SubscribeAsync();
 
     }

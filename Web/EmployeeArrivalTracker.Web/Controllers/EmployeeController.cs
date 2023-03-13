@@ -10,7 +10,7 @@
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("employee")]
     public class EmployeeController : BaseController
     {
         private readonly IEmployeeService employeeService;
@@ -25,11 +25,11 @@
         public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> GetAll() => await this.employeeService.GetAllAsync<EmployeeArrivalDetailsViewModel>();
 
         [HttpPost]
-        [Route("Add")]
+        [Route("add")]
         public async Task Add(AddEmployeeViewModel employee) => await this.employeeService.AddAsync(employee);
 
         [HttpPost]
-        [Route("Arrival")]
+        [Route("arrival")]
         public async Task Arrivals(IEnumerable<EmployeeArrivalViewModel> arrivals) => await this.employeeService.AddArrivalsAsync(arrivals);
     }
 }

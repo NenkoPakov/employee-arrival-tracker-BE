@@ -15,6 +15,7 @@
 
     using Microsoft.AspNetCore.SignalR;
     using Microsoft.EntityFrameworkCore;
+    using Newtonsoft.Json;
 
     using static EmployeeArrivalTracker.Services.Mapping.AutoMapperConfig;
 
@@ -114,7 +115,7 @@
                 await this.arrivalService.AddRangeAsync(mappedArrivals);
 
                 var mappedArrivalsDetails = MapperInstance.Map<IEnumerable<EmployeeArrivalDetailsViewModel>>(mappedArrivals);
-                string serializedArrivals = JsonSerializer.Serialize(mappedArrivalsDetails);
+                string serializedArrivals = JsonConvert.SerializeObject(mappedArrivalsDetails);
                 await this.hubContext.Clients.All.SendAsync(EmployeesHub.MethodName, serializedArrivals);
             }
             catch (Exception)
