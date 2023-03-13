@@ -1,15 +1,19 @@
 ﻿namespace EmployeeArrivalTracker.Services.Data
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Data.Common.Repositories;
     using EmployeeArrivalTracker.Data.Models;
-
+    using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
     using Microsoft.EntityFrameworkCore;
+
+    using static EmployeeArrivalTracker.Services.Mapping.AutoMapperConfig;
 
     public class ArrivalService : IArrivalService
     {
+        private const int PageSize = 10;
         private readonly IRepository<Arrival> arrivalRepository;
 
         public ArrivalService(IRepository<Arrival> arrivalRepository)
@@ -31,9 +35,13 @@
             return arrivals;
         }
 
-        public async Task<Arrival> GetByEmployeeIdAsync(int employeeId)
-        {
-            return await this.arrivalRepository.All().FirstOrDefaultAsync(a => a.Id == employeeId);
-        }
+        public async Task<Arrival> GetByEmployeeIdAsync(int employeeId) => await this.arrivalRepository.All().FirstOrDefaultAsync(a => a.Id == employeeId);
+
+        public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> GetArrivalsAsync(int pageNumber) =>
+            MapperInstance.Map<IEnumerable<EmployeeArrivalDetailsViewModel>>(await this.arrivalRepository.All()
+                          .AsQueryable()
+                          .Skip((pageNumber - 1) * PageSize)
+                          .Take(PageSize)
+                          .ToListAsync());
     }
 }
