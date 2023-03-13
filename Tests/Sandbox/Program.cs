@@ -101,7 +101,6 @@
             services.AddTransient<IArrivalService, ArrivalService>();
 
             AutoMapperConfig.RegisterMappings(
-                        typeof(EmployeeArrivalsViewModel).GetTypeInfo().Assembly,
                         typeof(EmployeeArrivalViewModel).GetTypeInfo().Assembly,
                         typeof(EmployeeArrivalDetailsViewModel).GetTypeInfo().Assembly,
                         typeof(AddEmployeeViewModel).GetTypeInfo().Assembly);
