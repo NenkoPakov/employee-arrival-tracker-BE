@@ -21,18 +21,14 @@
     public class EmployeeService : IEmployeeService
     {
         private readonly IDeletableEntityRepository<Employee> employeeRepository;
-        private readonly IRepository<EmployeeTeam> employeeTeamRepository;
-        private readonly IPersonService personService;
         private readonly IRoleService roleService;
         private readonly ITeamService teamService;
         private readonly IArrivalService arrivalService;
         private readonly IHubContext<EmployeesHub> hubContext;
 
-        public EmployeeService(IDeletableEntityRepository<Employee> employeeRepository, IRepository<EmployeeTeam> employeeTeamRepository, IPersonService personService, IRoleService roleService, ITeamService teamService, IArrivalService arrivalService, IHubContext<EmployeesHub> hubContext)
+        public EmployeeService(IDeletableEntityRepository<Employee> employeeRepository, IRoleService roleService, ITeamService teamService, IArrivalService arrivalService, IHubContext<EmployeesHub> hubContext)
         {
             this.employeeRepository = employeeRepository;
-            this.employeeTeamRepository = employeeTeamRepository;
-            this.personService = personService;
             this.roleService = roleService;
             this.teamService = teamService;
             this.arrivalService = arrivalService;
