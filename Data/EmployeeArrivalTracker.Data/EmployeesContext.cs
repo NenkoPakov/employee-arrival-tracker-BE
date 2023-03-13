@@ -169,6 +169,9 @@
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.HasIndex(u => u.Email)
+                    .IsUnique();
+
                 entity.Property(e => e.FirstName)
                     .IsRequired()
                     .HasMaxLength(50)

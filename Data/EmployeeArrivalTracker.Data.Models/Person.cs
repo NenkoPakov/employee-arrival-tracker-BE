@@ -1,5 +1,6 @@
 ﻿namespace EmployeeArrivalTracker.Data.Models
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
@@ -7,6 +8,8 @@
 
     public partial class Person : BaseDeletableModel<int>
     {
+        private int age;
+
         public Person()
         {
             this.Employees = new HashSet<Employee>();
@@ -27,7 +30,21 @@
 
         [Required(ErrorMessage = "The age field is required")]
         [Range(18, 65, ErrorMessage = "Value must be between 18 and 65")]
-        public int Age { get; set; }
+        public int Age
+        {
+            get => this.age;
+            set
+            {
+                if (value >= 18 && value <= 65)
+                {
+                    this.age = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Age must be between 18 and 65.");
+                }
+            }
+        }
 
         public virtual ICollection<Employee> Employees { get; set; }
     }
