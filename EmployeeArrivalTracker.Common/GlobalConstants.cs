@@ -8,6 +8,11 @@
         public const string ConnectionStringKey = "DefaultConnection";
         public const string FrontEndUrlKey = "FrontEndUrlKey";
         public const string SourceFileDestinationKey = "SourceFileDestination";
+        public const string UrlKey = "Url";
+        public const string SubscriptionUrlKey = "SubscriptionUrl";
+        public const string SubscriptionDateKey = "SubscriptionDate";
         public const string SeederBatchSizeKey = "SeederBatchSize";
+        public const string InMemorySubscriptionKey = "subscription";
+        public const string AcceptClientHeaderValue = "Fourth-Monitor";
     }
 }

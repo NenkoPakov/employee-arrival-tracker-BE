@@ -1,6 +1,9 @@
 ﻿namespace EmployeeArrivalTracker.Web
 {
+    using System;
+    using System.Net.Http;
     using System.Reflection;
+    using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Data;
     using EmployeeArrivalTracker.Data.Common.Hubs;
@@ -8,6 +11,7 @@
     using EmployeeArrivalTracker.Data.Repositories;
     using EmployeeArrivalTracker.Services.Data;
     using EmployeeArrivalTracker.Services.Mapping;
+    using EmployeeArrivalTracker.Web.Infrastructure;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
 
@@ -44,6 +48,8 @@
                 });
 
             services.AddControllers();
+            services.AddHttpClient();
+            services.AddMemoryCache();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
@@ -69,6 +75,7 @@
 
             // Services
             services.AddTransient<IEmployeeService, EmployeeService>();
+            services.AddTransient<ISubscriptionService, SubscriptionService>();
             services.AddTransient<IPersonService, PersonService>();
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<ITeamService, TeamService>();
@@ -96,11 +103,14 @@
 
             app.UseRouting();
             app.UseCors("ClientPermission");
+
+            app.UseMiddleware<SubscriptionMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
+                        name: "default",
+                        pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapHub<EmployeesHub>("/hubs/employees");
             });
 
