@@ -9,18 +9,27 @@
     using EmployeeArrivalTracker.Data;
     using EmployeeArrivalTracker.Services.Data;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
-
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
     using Newtonsoft.Json;
 
     internal class EmployeeSeeder : ISeeder
     {
+        private readonly string sourceFileDestination;
+        private readonly int seederBatchSize;
+
+        public EmployeeSeeder(string sourceFileDestination, int seederBatchSize)
+        {
+            this.sourceFileDestination = sourceFileDestination;
+            this.seederBatchSize = seederBatchSize;
+        }
+
         public async Task SeedAsync(EmployeesContext dbContext, IServiceProvider serviceProvider)
         {
             var employeeService = serviceProvider.GetRequiredService<IEmployeeService>();
 
-            using (StreamReader file = File.OpenText(GlobalConstants.SourceFileDestination))
+            using (StreamReader file = File.OpenText(this.sourceFileDestination))
             {
                 JsonTextReader reader = new JsonTextReader(file);
 
@@ -33,7 +42,7 @@
                         var deserializedEmployee = JsonSerializer.Create().Deserialize<AddEmployeeViewModel>(reader);
                         employees.Add(deserializedEmployee);
 
-                        if (employees.Count == GlobalConstants.SeederBatchSize)
+                        if (employees.Count == this.seederBatchSize)
                         {
                             await SeedEmployeesAsync(employeeService, employees);
                             employees.Clear();

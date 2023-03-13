@@ -24,6 +24,15 @@
             await this.roleRepository.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Role>> CreateIfNotExistsAwait(IEnumerable<string> roles)
+        {
+            var existing = await this.GetByTitlesAsync(roles);
+            var existingTitles = existing.Select(x => x.Title);
+            var missing = roles.Where(team => !existingTitles.Contains(team)).Select(rt => new Role { Title = rt }).ToList();
+
+            return existing.Union(missing);
+        }
+
         public async Task AddRangeAsync(IEnumerable<Role> roles)
         {
             await this.roleRepository.AddRangeAsync(roles);

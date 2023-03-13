@@ -38,6 +38,6 @@
 
         public async Task<IEnumerable<Person>> GetByIdsAsync(IEnumerable<int> ids) => await this.personRepository.All().Where(e => ids.Contains(e.Id)).ToListAsync();
 
-        public async Task<bool> CheckIfPersonExistsAsync(int id) => await this.GetByIdAsync(id) != null;
+        public async Task<bool> CheckIfPersonExistsAsync(int id) => await this.personRepository.All().AnyAsync(p => p.Id == id);
     }
 }

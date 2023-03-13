@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Data;
+    using Microsoft.Extensions.Configuration;
 
     public interface ISeeder
     {

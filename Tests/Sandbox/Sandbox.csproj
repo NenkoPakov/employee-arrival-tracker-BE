@@ -39,7 +39,6 @@
     <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data\EmployeeArrivalTracker.Data.csproj" />
     <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services.Data\EmployeeArrivalTracker.Services.Data.csproj" />
     <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services.Mapping\EmployeeArrivalTracker.Services.Mapping.csproj" />
-    <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services.Messaging\EmployeeArrivalTracker.Services.Messaging.csproj" />
     <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services\EmployeeArrivalTracker.Services.csproj" />
   </ItemGroup>
 

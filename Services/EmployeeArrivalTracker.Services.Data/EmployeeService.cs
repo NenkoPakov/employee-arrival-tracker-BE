@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
-    using System.Transactions;
 
     using EmployeeArrivalTracker.Data.Common.Hubs;
     using EmployeeArrivalTracker.Data.Common.Repositories;
@@ -50,145 +49,88 @@
 
         public async Task<IEnumerable<Employee>> GetByIdsAsync(IEnumerable<int> ids) => await this.employeeRepository.All().Where(e => ids.Contains(e.Id)).ToListAsync();
 
-        public async Task<bool> CheckIfPersonExistsAsync(int id) => await this.GetByIdAsync(id) != null;
+        public async Task<bool> CheckIfPersonExistsAsync(int id) => await this.employeeRepository.All().AnyAsync(e => e.Id == id);
 
         public async Task AddAsync(AddEmployeeViewModel employee)
         {
-            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            try
             {
-                try
-                {
-                    var person = MapperInstance.Map<Person>(employee);
-                    await this.personService.AddAsync(person);
+                var newEmployee = new Employee();
 
-                    var role = await this.roleService.GetByTitleAsync(employee.Role);
-                    if (role == null)
-                    {
-                        role = new Role { Title = employee.Role };
-                        await this.roleService.AddAsync(role);
-                    }
+                newEmployee.Person = MapperInstance.Map<Person>(employee);
+                newEmployee.Manager = await this.GetByIdAsync(employee.ManagerId);
+                newEmployee.Role = await this.roleService.GetByTitleAsync(employee.Role) ?? new Role { Title = employee.Role };
 
-                    var teams = new List<Team>();
-                    foreach (var employeeTeam in employee.Teams)
-                    {
-                        var team = await this.teamService.GetByNameAsync(employeeTeam);
-                        if (team == null)
-                        {
-                            team = new Team { Name = employeeTeam };
-                            await this.teamService.AddAsync(team);
-                        }
+                var teams = await this.teamService.CreateIfNotExistsAwait(employee.Teams);
+                newEmployee.EmployeeTeams = this.AssignEmployeeToTeams(teams, newEmployee).ToList();
 
-                        teams.Add(team);
-                    }
-
-                    await this.teamService.AddRangeAsync(teams);
-
-                    int? managerId = employee.ManagerId != 0
-                        ? await this.personService.CheckIfPersonExistsAsync(employee.ManagerId)
-                            ? employee.ManagerId
-                            : null :
-                        null;
-
-                    var newEmployee = new Employee()
-                    {
-                        PersonId = person.Id,
-                        RoleId = role.Id,
-                        ManagerId = managerId,
-                    };
-
-                    await this.employeeRepository.AddAsync(newEmployee);
-                    await this.employeeRepository.SaveChangesAsync();
-
-                    await this.employeeTeamRepository.AddRangeAsync(teams.Select(t => new EmployeeTeam { EmployeeId = newEmployee.Id, TeamId = t.Id }));
-                    await this.employeeTeamRepository.SaveChangesAsync();
-
-                    transaction.Complete();
-                }
-                catch (Exception)
-                {
-                    transaction.Dispose();
-                    throw;
-                }
+                await this.employeeRepository.AddAsync(newEmployee);
+                await this.employeeRepository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
         public async Task AddRangeAsync(IEnumerable<AddEmployeeViewModel> employees)
         {
-            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            try
             {
-                try
+                var people = MapperInstance.Map<IEnumerable<Person>>(employees);
+
+                var allRoles = await this.roleService.CreateIfNotExistsAwait(employees.Select(e => e.Role.Trim()).Distinct());
+                var allTeams = await this.teamService.CreateIfNotExistsAwait(employees.SelectMany(e => e.Teams).Distinct());
+
+                var newEmployees = new List<Employee>();
+                foreach (var employee in employees)
                 {
-                    var people = MapperInstance.Map<IEnumerable<Person>>(employees);
-                    await this.personService.AddRangeAsync(people);
+                    var newEmployee = new Employee();
 
-                    var existingRoles = await this.roleService.GetByTitlesAsync(employees.Select(e => e.Role));
-                    var missingRoles = MapperInstance.Map<IEnumerable<Role>>(employees.Where(e => !existingRoles.Select(r => r.Title).Contains(e.Role)));
-                    await this.roleService.AddRangeAsync(missingRoles);
+                    newEmployee.Person = people.FirstOrDefault(p => employee.FirstName == p.FirstName &&
+                                                                    employee.SurName == p.SurName &&
+                                                                    employee.Age == p.Age);
+                    newEmployee.Manager = await this.GetByIdAsync(employee.ManagerId);
+                    newEmployee.Role = allRoles.FirstOrDefault(r => r.Title == employee.Role.Trim());
+                    newEmployee.EmployeeTeams = this.AssignEmployeeToTeams(allTeams.Where(t => employee.Teams.Contains(t.Name)), newEmployee).ToList();
 
-                    var allRoles = existingRoles.Union(missingRoles);
-
-                    var allTeamsNames = employees.SelectMany(e => e.Teams).Distinct();
-                    var existingTeams = await this.teamService.GetByNamesAsync(allTeamsNames);
-                    var existingTeamsNames = existingTeams.Select(x => x.Name);
-                    var missingTeams = allTeamsNames.Where(team => !existingTeamsNames.Contains(team)).Select(mt => new Team { Name = mt }).ToList();
-                    await this.teamService.AddRangeAsync(missingTeams);
-
-                    var allTeams = existingTeams.Union(missingTeams);
-
-                    var newEmployees = new List<Employee>();
-                    foreach (var employee in employees)
-                    {
-                        int? managerId = employee.ManagerId != 0
-                        ? await this.personService.CheckIfPersonExistsAsync(employee.ManagerId)
-                            ? employee.ManagerId
-                            : null :
-                        null;
-
-                        var person = people.FirstOrDefault(p => employee.FirstName == p.FirstName &&
-                                                                employee.SurName == p.SurName &&
-                                                                employee.Age == p.Age);
-
-                        var role = allRoles.FirstOrDefault(r => r.Title == employee.Role.Trim());
-
-                        var newEmployee = new Employee()
-                        {
-                            PersonId = person.Id,
-                            RoleId = role.Id,
-                            ManagerId = managerId,
-                        };
-
-                        var teams = allTeams.Where(r => employee.Teams.Contains(r.Name));
-                        var employeeTeams = teams.Select(t => new EmployeeTeam { EmployeeId = person.Id, TeamId = t.Id });
-                        newEmployee.EmployeeTeams = employeeTeams.ToList();
-
-                        newEmployees.Add(newEmployee);
-                    }
-
-                    await this.employeeRepository.AddRangeAsync(newEmployees);
-                    await this.employeeRepository.SaveChangesAsync();
-
-                    transaction.Complete();
+                    newEmployees.Add(newEmployee);
                 }
-                catch (Exception)
-                {
-                    transaction.Dispose();
-                    throw;
-                }
+
+                await this.employeeRepository.AddRangeAsync(newEmployees);
+                await this.employeeRepository.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
         public async Task AddArrivalsAsync(IEnumerable<EmployeeArrivalViewModel> arrivals)
         {
-            var existingEmployees = await this.GetByIdsAsync(arrivals.Select(a => a.EmployeeId));
-            var existingEmployeesId = existingEmployees.Select(e => e.Id);
-            var validArrivals = arrivals.Where(a => existingEmployeesId.Contains(a.EmployeeId));
+            try
+            {
+                var existingEmployees = await this.GetByIdsAsync(arrivals.Select(a => a.EmployeeId));
+                var existingEmployeesId = existingEmployees.Select(e => e.Id);
+                var validArrivals = arrivals.Where(a => existingEmployeesId.Contains(a.EmployeeId));
 
-            var mappedArrivals = MapperInstance.Map<IEnumerable<Arrival>>(validArrivals);
-            await this.arrivalService.AddRangeAsync(mappedArrivals);
+                var mappedArrivals = MapperInstance.Map<IEnumerable<Arrival>>(validArrivals);
+                await this.arrivalService.AddRangeAsync(mappedArrivals);
 
-            var mappedArrivalsDetails = MapperInstance.Map<IEnumerable<EmployeeArrivalDetailsViewModel>>(mappedArrivals);
-            string serializedArrivals = JsonSerializer.Serialize(mappedArrivalsDetails);
-            await this.hubContext.Clients.All.SendAsync(EmployeesHub.MethodName, serializedArrivals);
+                var mappedArrivalsDetails = MapperInstance.Map<IEnumerable<EmployeeArrivalDetailsViewModel>>(mappedArrivals);
+                string serializedArrivals = JsonSerializer.Serialize(mappedArrivalsDetails);
+                await this.hubContext.Clients.All.SendAsync(EmployeesHub.MethodName, serializedArrivals);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private IEnumerable<EmployeeTeam> AssignEmployeeToTeams(IEnumerable<Team> teams, Employee employee)
+        {
+            return teams.Select(t => new EmployeeTeam { Employee = employee, Team = t })
+                        .ToList();
         }
     }
 }

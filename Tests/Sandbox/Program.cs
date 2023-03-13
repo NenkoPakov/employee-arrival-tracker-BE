@@ -28,7 +28,7 @@
         {
             Console.WriteLine($"{typeof(Program).Namespace} ({string.Join(" ", args)}) starts working...");
             var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
+            var configuration = ConfigureServices(serviceCollection);
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider(true);
 
             // Seed data on application startup
@@ -37,7 +37,9 @@
                 var dbContext = serviceScope.ServiceProvider.GetRequiredService<EmployeesContext>();
                 dbContext.Database.Migrate();
 
-                var seeder = new EmployeesContextSeeder();
+                var sourceFileDestination = configuration.GetValue<string>(GlobalConstants.SourceFileDestinationKey);
+                var seederBatchSize = configuration.GetValue<int>(GlobalConstants.SeederBatchSizeKey);
+                var seeder = new EmployeesContextSeeder(sourceFileDestination, seederBatchSize);
                 seeder.SeedAsync(dbContext, serviceScope.ServiceProvider).GetAwaiter().GetResult();
             }
 
@@ -62,7 +64,7 @@
             return await Task.FromResult(0);
         }
 
-        private static void ConfigureServices(ServiceCollection services)
+        private static IConfiguration ConfigureServices(ServiceCollection services)
         {
             var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(GlobalConstants.AppSettingsFileName, false, true)
@@ -80,7 +82,7 @@
                 {
                     policy.AllowAnyHeader()
                     .AllowAnyMethod()
-                    .WithOrigins(GlobalConstants.FrontEndUrl)
+                    .WithOrigins(configuration.GetValue<string>(GlobalConstants.FrontEndUrlKey))
                     .AllowCredentials();
                 });
             });
@@ -103,6 +105,8 @@
                         typeof(EmployeeArrivalViewModel).GetTypeInfo().Assembly,
                         typeof(EmployeeArrivalDetailsViewModel).GetTypeInfo().Assembly,
                         typeof(AddEmployeeViewModel).GetTypeInfo().Assembly);
+
+            return configuration;
         }
     }
 }

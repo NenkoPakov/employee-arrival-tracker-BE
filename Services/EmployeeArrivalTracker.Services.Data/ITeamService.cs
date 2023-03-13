@@ -14,5 +14,6 @@
         Task<IEnumerable<Team>> GetByNamesAsync(IEnumerable<string> teams);
 
         Task AddAsync(Team team);
+        Task<IEnumerable<Team>> CreateIfNotExistsAwait(IEnumerable<string> teams);
     }
 }

@@ -25,6 +25,15 @@
             await this.teamRepository.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<Team>> CreateIfNotExistsAwait(IEnumerable<string> teams)
+        {
+            var existingTeams = await this.GetByNamesAsync(teams);
+            var existingTeamsNames = existingTeams.Select(x => x.Name);
+            var missingTeams = teams.Where(team => !existingTeamsNames.Contains(team)).Select(mt => new Team { Name = mt }).ToList();
+
+            return existingTeams.Union(missingTeams);
+        }
+
         public async Task AddRangeAsync(IEnumerable<Team> teams)
         {
             await this.teamRepository.AddRangeAsync(teams);
