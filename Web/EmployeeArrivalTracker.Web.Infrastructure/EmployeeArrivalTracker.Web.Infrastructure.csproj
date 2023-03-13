@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Data\EmployeeArrivalTracker.Data.Models\EmployeeArrivalTracker.Data.Models.csproj" />
+    <ProjectReference Include="..\..\EmployeeArrivalTracker.Common\EmployeeArrivalTracker.Common.csproj" />
     <ProjectReference Include="..\..\Services\EmployeeArrivalTracker.Services\EmployeeArrivalTracker.Services.csproj" />
   </ItemGroup>
 

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-
+    using EmployeeArrivalTracker.Common;
     using EmployeeArrivalTracker.Data.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Caching.Memory;
@@ -22,7 +22,7 @@
         {
             if (context.Request.Path.StartsWithSegments("/Employee/Arrival"))
             {
-                this.memoryCache.TryGetValue("subscribe", out Subscription subscription);
+                this.memoryCache.TryGetValue(GlobalConstants.InMemorySubscriptionKey, out Subscription subscription);
 
                 if (!context.Request.Headers.TryGetValue("X-Fourth-Token", out var token))
                 {
