@@ -1,11 +1,8 @@
 ﻿namespace EmployeeArrivalTracker.Web.Controllers
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Services.Data;
-    using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
-    using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
 
     using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +19,10 @@
 
         [HttpGet]
         [Route("subscribe")]
-        public async Task Subscribe() => await this.subscriptionService.SubscribeAsync();
-
+        public async Task<ActionResult> Subscribe()
+        {
+            await this.subscriptionService.SubscribeAsync();
+            return this.Ok();
+        }
     }
 }

@@ -2,9 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using EmployeeArrivalTracker.Services;
+
     using EmployeeArrivalTracker.Services.Data;
-    using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
 
     using Microsoft.AspNetCore.Mvc;
@@ -22,10 +21,11 @@
 
         [HttpGet]
         [Route("page/{pageNumber:int?}")]
-        public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> Page(string orderByField, int pageNumber = 1, bool isAscending = true) => await this.arrivalService.GetArrivalsAsync(pageNumber, orderByField, isAscending);
+        public async Task<ActionResult<IEnumerable<EmployeeArrivalDetailsViewModel>>> Page(string orderByField, int pageNumber = 1, bool isAscending = true)
+            => this.Ok(await this.arrivalService.GetArrivalsAsync(pageNumber, orderByField, isAscending));
 
         [HttpGet]
         [Route("count")]
-        public async Task<int> Count() => await this.arrivalService.GetCountAsync();
+        public async Task<ActionResult<int>> Count() => this.Ok(await this.arrivalService.GetCountAsync());
     }
 }

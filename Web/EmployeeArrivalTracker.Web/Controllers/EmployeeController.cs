@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using EmployeeArrivalTracker.Services;
+
     using EmployeeArrivalTracker.Services.Data;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
@@ -20,16 +20,24 @@
             this.employeeService = employeeService;
         }
 
-
         [HttpGet]
-        public async Task<IEnumerable<EmployeeArrivalDetailsViewModel>> GetAll() => await this.employeeService.GetAllAsync<EmployeeArrivalDetailsViewModel>();
+        public async Task<ActionResult<IEnumerable<EmployeeArrivalDetailsViewModel>>> GetAll()
+            => this.Ok(await this.employeeService.GetAllAsync<EmployeeArrivalDetailsViewModel>());
 
         [HttpPost]
         [Route("add")]
-        public async Task Add(AddEmployeeViewModel employee) => await this.employeeService.AddAsync(employee);
+        public async Task<ActionResult> Add(AddEmployeeViewModel employee)
+        {
+            await this.employeeService.AddAsync(employee);
+            return this.Ok();
+        }
 
         [HttpPost]
         [Route("arrival")]
-        public async Task Arrivals(IEnumerable<EmployeeArrivalViewModel> arrivals) => await this.employeeService.AddArrivalsAsync(arrivals);
+        public async Task<ActionResult> Arrivals(IEnumerable<EmployeeArrivalViewModel> arrivals)
+        {
+            await this.employeeService.AddArrivalsAsync(arrivals);
+            return this.Ok();
+        }
     }
 }
