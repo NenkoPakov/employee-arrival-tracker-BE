@@ -12,6 +12,7 @@
         public const string SubscriptionUrlKey = "SubscriptionUrl";
         public const string SubscriptionDateKey = "SubscriptionDate";
         public const string SeederBatchSizeKey = "SeederBatchSize";
+        public const string SubscriptionDateFormatKey = "SubscriptionDateFormat";
         public const string InMemorySubscriptionKey = "subscription";
         public const string AcceptClientHeaderValue = "Fourth-Monitor";
     }

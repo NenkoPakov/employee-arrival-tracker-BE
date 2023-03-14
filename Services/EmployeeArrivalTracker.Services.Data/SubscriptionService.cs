@@ -18,7 +18,7 @@
         private readonly HttpClient httpClient;
         private readonly IMemoryCache memoryCache;
         private readonly string subscriptionUrl;
-        private readonly string subscriptionDate;
+        private readonly string subscriptionDateFormat;
         private readonly string apiUrl;
         private bool disposed = false;
 
@@ -28,7 +28,7 @@
             this.httpClient = httpClient;
             this.memoryCache = memoryCache;
             this.subscriptionUrl = configuration.GetValue<string>(GlobalConstants.SubscriptionUrlKey);
-            this.subscriptionDate = configuration.GetValue<string>(GlobalConstants.SubscriptionDateKey);
+            this.subscriptionDateFormat = configuration.GetValue<string>(GlobalConstants.SubscriptionDateFormatKey);
             this.apiUrl = configuration.GetValue<string>(GlobalConstants.UrlKey);
         }
 
@@ -65,7 +65,7 @@
 
             var queryString = new Dictionary<string, string>
             {
-                { "date", this.subscriptionDate },
+                { "date", DateTime.UtcNow.ToString(this.subscriptionDateFormat) },
                 { "callback", $"{this.apiUrl}/employee/arrival" },
             };
 
