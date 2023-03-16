@@ -6,7 +6,7 @@
     using EmployeeArrivalTracker.Services.Data;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
-
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
     [ApiController]
@@ -34,6 +34,7 @@
 
         [HttpPost]
         [Route("arrival")]
+        [Authorize(Policy = "Token")]
         public async Task<ActionResult> Arrivals(IEnumerable<EmployeeArrivalViewModel> arrivals)
         {
             await this.employeeService.AddArrivalsAsync(arrivals);

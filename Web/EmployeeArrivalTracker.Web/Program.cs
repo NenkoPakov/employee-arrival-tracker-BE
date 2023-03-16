@@ -15,6 +15,7 @@
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Add;
     using EmployeeArrivalTracker.Web.ViewModels.Employee.Arrival;
 
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
@@ -49,12 +50,20 @@
 
             services.AddControllers();
             services.AddHttpClient();
+            services.AddHttpContextAccessor();
             services.AddMemoryCache();
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
             services.AddSingleton(configuration);
+
+            services.AddSingleton<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Token", policy =>
+                    policy.Requirements.Add(new SubscriptionRequirement()));
+            });
 
             services.AddSignalR();
 
@@ -104,7 +113,7 @@
             app.UseRouting();
             app.UseCors("ClientPermission");
 
-            app.UseMiddleware<SubscriptionMiddleware>();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
