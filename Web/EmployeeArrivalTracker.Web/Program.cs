@@ -1,9 +1,6 @@
 ﻿namespace EmployeeArrivalTracker.Web
 {
-    using System;
-    using System.Net.Http;
     using System.Reflection;
-    using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Data;
     using EmployeeArrivalTracker.Data.Common.Hubs;
@@ -58,7 +55,7 @@
 
             services.AddSingleton(configuration);
 
-            services.AddSingleton<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, SubscriptionAuthorizationHandler>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Token", policy =>

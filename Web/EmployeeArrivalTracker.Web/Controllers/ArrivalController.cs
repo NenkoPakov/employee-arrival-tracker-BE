@@ -1,5 +1,6 @@
 ﻿namespace EmployeeArrivalTracker.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -22,10 +23,29 @@
         [HttpGet]
         [Route("page/{pageNumber:int?}")]
         public async Task<ActionResult<IEnumerable<EmployeeArrivalDetailsViewModel>>> Page(string orderByField, int pageNumber = 1, bool isAscending = true)
-            => this.Ok(await this.arrivalService.GetArrivalsAsync(pageNumber, orderByField, isAscending));
+        {
+            try
+            {
+                return this.Ok(await this.arrivalService.GetArrivalsAsync(pageNumber, orderByField, isAscending));
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+        }
 
         [HttpGet]
         [Route("count")]
-        public async Task<ActionResult<int>> Count() => this.Ok(await this.arrivalService.GetCountAsync());
+        public async Task<ActionResult<int>> Count()
+        {
+            try
+            {
+                return this.Ok(await this.arrivalService.GetCountAsync());
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+        }
     }
 }

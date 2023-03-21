@@ -1,5 +1,6 @@
 ﻿namespace EmployeeArrivalTracker.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -22,14 +23,30 @@
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmployeeArrivalDetailsViewModel>>> GetAll()
-            => this.Ok(await this.employeeService.GetAllAsync<EmployeeArrivalDetailsViewModel>());
+        {
+            try
+            {
+                return this.Ok(await this.employeeService.GetAllAsync<EmployeeArrivalDetailsViewModel>());
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
+        }
 
         [HttpPost]
         [Route("add")]
         public async Task<ActionResult> Add(AddEmployeeViewModel employee)
         {
-            await this.employeeService.AddAsync(employee);
-            return this.Ok();
+            try
+            {
+                await this.employeeService.AddAsync(employee);
+                return this.Ok();
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest($"Exception: {ex}");
+            }
         }
 
         [HttpPost]
@@ -37,8 +54,15 @@
         [Authorize(Policy = "Token")]
         public async Task<ActionResult> Arrivals(IEnumerable<EmployeeArrivalViewModel> arrivals)
         {
-            await this.employeeService.AddArrivalsAsync(arrivals);
-            return this.Ok();
+            try
+            {
+                await this.employeeService.AddArrivalsAsync(arrivals);
+                return this.Ok();
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
         }
     }
 }

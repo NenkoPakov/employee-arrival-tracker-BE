@@ -1,5 +1,6 @@
 ﻿namespace EmployeeArrivalTracker.Web.Controllers
 {
+    using System;
     using System.Threading.Tasks;
 
     using EmployeeArrivalTracker.Services.Data;
@@ -21,8 +22,15 @@
         [Route("subscribe")]
         public async Task<ActionResult> Subscribe()
         {
-            await this.subscriptionService.SubscribeAsync();
-            return this.Ok();
+            try
+            {
+                await this.subscriptionService.SubscribeAsync();
+                return this.Ok();
+            }
+            catch (Exception ex)
+            {
+                return this.BadRequest(ex);
+            }
         }
     }
 }

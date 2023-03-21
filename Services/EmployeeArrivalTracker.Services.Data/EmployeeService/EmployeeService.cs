@@ -50,8 +50,6 @@
 
         public async Task AddAsync(AddEmployeeViewModel employee)
         {
-            try
-            {
                 var newEmployee = new Employee();
 
                 newEmployee.Person = MapperInstance.Map<Person>(employee);
@@ -63,17 +61,10 @@
 
                 await this.employeeRepository.AddAsync(newEmployee);
                 await this.employeeRepository.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         public async Task AddRangeAsync(IEnumerable<AddEmployeeViewModel> employees)
         {
-            try
-            {
                 var people = MapperInstance.Map<IEnumerable<Person>>(employees);
 
                 var allRoles = await this.roleService.CreateIfNotExistsAwait(employees.Select(e => e.Role.Trim()).Distinct());
@@ -96,17 +87,10 @@
 
                 await this.employeeRepository.AddRangeAsync(newEmployees);
                 await this.employeeRepository.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         public async Task AddArrivalsAsync(IEnumerable<EmployeeArrivalViewModel> arrivals)
         {
-            try
-            {
                 var existingEmployees = await this.GetByIdsAsync(arrivals.Select(a => a.EmployeeId));
                 var existingEmployeesId = existingEmployees.Select(e => e.Id);
                 var validArrivals = arrivals.Where(a => existingEmployeesId.Contains(a.EmployeeId));
@@ -117,11 +101,6 @@
                 var mappedArrivalsDetails = MapperInstance.Map<IEnumerable<EmployeeArrivalDetailsViewModel>>(mappedArrivals);
                 string serializedArrivals = JsonConvert.SerializeObject(mappedArrivalsDetails);
                 await this.hubContext.Clients.All.SendAsync(EmployeesHub.MethodName, serializedArrivals);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         private IEnumerable<EmployeeTeam> AssignEmployeeToTeams(IEnumerable<Team> teams, Employee employee)
